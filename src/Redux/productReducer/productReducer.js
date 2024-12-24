@@ -1,10 +1,12 @@
-import { EDITDATA, ERROR, LOADING, PRODATA } from "./actionType"
+import { CATAGORY, EDITDATA, ERROR, LOADING, PRODATA, SUBCATAGORY } from "./actionType"
 
 const init={
     error:"",
     loading:false,
     prodata:[],
     editdata:[],
+    cat:[],
+    subcat:[]
 }
 
 const Proreducer=(state=init,{type,payload})=>{
@@ -17,6 +19,16 @@ const Proreducer=(state=init,{type,payload})=>{
         ...state,
         loading:false,
         prodata:payload
+    }
+    case CATAGORY:return{
+        ...state,
+        loading:false,
+        cat:payload
+    }
+    case SUBCATAGORY:return{
+        ...state,
+        loading:false,
+        subcat:payload
     }
     case EDITDATA:return{
         ...state,
