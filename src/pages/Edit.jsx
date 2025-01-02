@@ -57,16 +57,7 @@ function EditProduct() {
           <button type="submit">{id === 'new' ? 'Add Product' : 'Save Changes'}</button>
         </form>
 
-        <div className="product-preview">
-          <h2>Product Preview</h2>
-          <div className="preview-card">
-            <img src={image} alt={title} style={{ width: '200px', height: '200px' }} />
-            <h3>Title: {title || 'Title Here'}</h3>
-            <p>Description: {description || 'Description Here'}</p>
-            <p>Price: {price ? `${price}` : 'Price Here'} Rs.</p>
-            <p>Category: {category || 'Category Here'}</p> {/* Displaying the selected category */}
-          </div>
-        </div>
+       
       </div>
     </div>
   );

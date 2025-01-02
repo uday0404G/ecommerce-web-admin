@@ -1,27 +1,54 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Admin from '../pages/Admin';
-import Product from '../pages/Product';
+import Dashboard from '../pages/Dashboard';
+import Products from '../pages/Products';
 import AddProduct from '../pages/AddProduct';
-import Signup from '../pages/Signup';
-import Users from '../pages/Users';
 import EditProduct from '../pages/Edit';
+import Users from '../pages/Users';
+import Login from '../pages/Login';
 import Error from '../Component/Eroor';
-
+import PrivateRoute from '../Component/PrivateRoute';
+import Unauthorized from '../pages/Unauthorized';
 
 const MainRoute = () => {
   return (
     <Routes>
-      <Route path="/" element={<Admin />} />
-      <Route path="/Product" element={<Product />} />
-      <Route path="/AddProduct" element={<AddProduct />} />
-      <Route path="/Signup" element={<Signup />} />
-      <Route path="/Users" element={<Users />} />
-      <Route path="/Edit/:id" element={<EditProduct />} />
+      <Route path="/" element={<Login />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
+      
+      <Route path="/dashboard" element={
+        <PrivateRoute>
+          <Dashboard />
+        </PrivateRoute>
+      } />
+      
+      <Route path="/products" element={
+        <PrivateRoute>
+          <Products />
+        </PrivateRoute>
+      } />
+      
+      <Route path="/add-product" element={
+        <PrivateRoute>
+          <AddProduct />
+        </PrivateRoute>
+      } />
+      
+      <Route path="/edit/:id" element={
+        <PrivateRoute>
+          <EditProduct />
+        </PrivateRoute>
+      } />
+      
+      <Route path="/users" element={
+        <PrivateRoute>
+          <Users />
+        </PrivateRoute>
+      } />
 
       <Route path="*" element={<Error />} />
     </Routes>
   );
-}
+};
 
 export default MainRoute;

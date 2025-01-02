@@ -1,107 +1,111 @@
-
 import React, { useEffect, useState } from 'react';
-import { AddProducts, catagory,  subcatagory } from '../Redux/productReducer/action';
+import { addProduct } from '../Redux/productReducer/action';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { useParams, useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
-  const [data,setdata]=useState({})
+  const [data, setData] = useState({
+    title: '',
+    description: '', 
+    price: '',
+    image: '',
+    category: '',
+    subcategory: '',
+    stock: ''
+  });
   const dispatch = useDispatch();
-  const { loading, cat,subcat, error } = useSelector((state) => state);
+  const navigate = useNavigate();
+  const { loading, error, cat, subcat } = useSelector((state) => state.products);
+  const { id } = useParams();
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData(prev => ({...prev, [name]: value}));
+  };
 
-  useEffect(() => {
-    dispatch(catagory);
-    dispatch(subcatagory); 
-  }, [dispatch]);
-
-
-const handelchange=(e)=>{
-const {name,value}=e.target
-setdata({...data,[name]:value})
-}
-const handleSubmit=(e)=>{
-  e.preventDefault()
-  dispatch(AddProducts(data))
-}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await dispatch(addProduct(data));
+      navigate('/products');
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
+  };
 
   return (
     <div className="add-product-container">
       <div className="add-product-form">
-        <h1>Add Product</h1>
+        <h1>{id ? 'Edit Product' : 'Add Product'}</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            // value={title}
-            name='name'
-            onChange={handelchange}
+            value={data.title || ''}
+            name="title"
+            onChange={handleChange}
             placeholder="Enter Product Title"
             required
           />
           <textarea
-            type="text"
-            // value={description}
-            name='description'
-            onChange={handelchange}
+            value={data.description || ''}
+            name="description"
+            onChange={handleChange}
             placeholder="Enter Product Description"
             required
           />
           <input
-            type="text"
-            name='price'
-            // value={price}
-            onChange={handelchange}
+            type="number"
+            name="price"
+            value={data.price || ''}
+            onChange={handleChange}
             placeholder="Enter Product Price"
             required
           />
           <input
             type="text"
-            // value={image}
-            onChange={handelchange}
+            name="image"
+            value={data.image || ''}
+            onChange={handleChange}
             placeholder="Enter Product Image URL"
             required
           />
-          {/* Category Selection */}
           <select
-            // value={category}
-            name='category'
-            onChange={handelchange}
+            value={data.category || ''}
+            name="category"
+            onChange={handleChange}
             required
           >
-            <option value="" >
-              Select Category
-            </option>
-            {cat.map((el)=>{return(<option key={el._id} value={el._id}>{el.name}</option>)})}
+            <option value="">Select Category</option>
+            <option value="EYEGLASSES">EYEGLASSES</option>
+            <option value="SUNGLASSES">SUNGLASSES</option>
+            <option value="LENSES">LENSES</option>
+            <option value="COLLECTION">COLLECTION</option>
+            <option value="CONTACTS">CONTACTS</option>
           </select>
           <select
-          name='subcategory'
-            // value={category}
-            onChange={handelchange}
+            name="subcategory"
+            value={data.subcategory || ''}
+            onChange={handleChange}
             required
           >
-            <option value="" >
-              Select Category
-            </option>
-            {subcat.map((el)=>{return(<option key={el._id} value={el._id}>{el.name}</option>)})}
+            <option value="">Select Subcategory</option>
+            <option value="MEN">MEN</option>
+            <option value="WOMEN">WOMEN</option>
+            <option value="KIDS">KIDS</option>
           </select>
-          <input type="text" name="stock"  />
-          <button type="submit">Add Product</button>
+          <input 
+            type="number"
+            name="stock"
+            value={data.stock || ''}
+            onChange={handleChange}
+            placeholder="Enter Stock Quantity"
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Submitting...' : id ? 'Update Product' : 'Add Product'}
+          </button>
         </form>
       </div>
-      {/* <div className="product-preview">
-        <h2>Product Preview</h2>
-        <div className="preview-card">
-          <img
-            // src={image}
-            // alt={title}
-            style={{ width: '200px', height: '200px' }}
-          />
-          {/* <h3>Title: {title || 'Title Here'}</h3> 
-          <p>Description: {description || 'Description Here'}</p>
-          <p>Price: {price ? `${price}` : 'Price Here'} Rs.</p>
-          <p>Category: {category || 'Category Here'}</p> {/* Displaying the selected category 
-        </div>
-      </div> */}
     </div>
   );
 };
