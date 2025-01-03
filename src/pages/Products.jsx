@@ -46,7 +46,7 @@ const ProductTable = ({ products, onDelete }) => {
                                     />
                                 )}
                             </td>
-                            <td>{renderCellContent(product.title)}</td>
+                            <td>{renderCellContent(product.name)}</td>
                             <td>{renderCellContent(product.category)}</td>
                             <td>${renderCellContent(product.price)}</td>
                             <td>{renderCellContent(product.stock)}</td>

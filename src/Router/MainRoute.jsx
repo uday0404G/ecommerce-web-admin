@@ -9,6 +9,7 @@ import Login from '../pages/Login';
 import Error from '../Component/Eroor';
 import PrivateRoute from '../Component/PrivateRoute';
 import Unauthorized from '../pages/Unauthorized';
+import Profile from '../pages/Profile';
 
 const MainRoute = () => {
   return (
@@ -43,6 +44,12 @@ const MainRoute = () => {
       <Route path="/users" element={
         <PrivateRoute>
           <Users />
+        </PrivateRoute>
+      } />
+
+      <Route path="/profile" element={
+        <PrivateRoute>
+          <Profile />
         </PrivateRoute>
       } />
 

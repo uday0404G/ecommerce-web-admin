@@ -1,5 +1,5 @@
 import api from '../../utils/axios';
-import { LOADING, PRODATA, ERROR, DELETE_PRODUCT, UPDATE_PRODUCT } from "./actionType";
+import { LOADING, PRODATA, ERROR, DELETE_PRODUCT, UPDATE_PRODUCT, CATAGORY, SUBCATAGORY, EDITDATA } from "./actionType";
 
 // Get all products
 export const getProducts = () => async (dispatch) => {
@@ -16,7 +16,7 @@ export const getProducts = () => async (dispatch) => {
 export const addProduct = (productData) => async (dispatch) => {
     dispatch({ type: LOADING });
     try {
-        const response = await api.post('/product', productData);
+        const response = await api.post('/product/p', productData);
         dispatch(getProducts()); // Refresh product list
         return response.data;
     } catch (error) {
@@ -46,6 +46,41 @@ export const deleteProduct = (id) => async (dispatch) => {
         await api.delete(`/product/${id}`);
         dispatch({ type: DELETE_PRODUCT, payload: id });
         dispatch(getProducts()); // Refresh product list
+    } catch (error) {
+        dispatch({ type: ERROR, payload: error.message });
+        throw error;
+    }
+};
+
+// Get all categories
+export const getCategories = () => async (dispatch) => {
+    dispatch({ type: LOADING });
+    try {
+        const response = await api.get('/catagory');
+        dispatch({ type: CATAGORY, payload: response.data });
+    } catch (error) {
+        dispatch({ type: ERROR, payload: error.message });
+    }
+};
+
+// Get all subcategories
+export const getSubCategories = () => async (dispatch) => {
+    dispatch({ type: LOADING });
+    try {
+        const response = await api.get('/subcatagory');
+        dispatch({ type: SUBCATAGORY, payload: response.data });
+    } catch (error) {
+        dispatch({ type: ERROR, payload: error.message });
+    }
+};
+
+// Get product by ID
+export const getProductById = (id) => async (dispatch) => {
+    dispatch({ type: LOADING });
+    try {
+        const response = await api.get(`/product/${id}`);
+        dispatch({ type: EDITDATA, payload: response.data });
+        return response.data;
     } catch (error) {
         dispatch({ type: ERROR, payload: error.message });
         throw error;

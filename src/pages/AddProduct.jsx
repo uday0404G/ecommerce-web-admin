@@ -1,110 +1,166 @@
 import React, { useEffect, useState } from 'react';
-import { addProduct } from '../Redux/productReducer/action';
+import { addProduct, getCategories, getSubCategories, getProductById, updateProduct } from '../Redux/productReducer/action';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
+import Sidebar from '../Component/Sidebar';
 
 const AddProduct = () => {
-  const [data, setData] = useState({
-    title: '',
+  const [formData, setFormData] = useState({
+    name: '',
     description: '', 
     price: '',
-    image: '',
     category: '',
-    subcategory: '',
+    subCategory: '',
     stock: ''
   });
+
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, cat, subcat } = useSelector((state) => state.products);
-  const { id } = useParams();
+
+  useEffect(() => {
+    // Fetch categories and subcategories
+    dispatch(getCategories());
+    dispatch(getSubCategories());
+
+    // If editing, fetch product data
+    if (id) {
+      dispatch(getProductById(id))
+        .then(product => {
+          setFormData({
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            category: product.category?._id,
+            subCategory: product.subCategory?._id,
+            stock: product.stock
+          });
+        })
+        .catch(error => console.error('Error fetching product:', error));
+    }
+  }, [dispatch, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData(prev => ({...prev, [name]: value}));
+    setFormData(prev => ({...prev, [name]: value}));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(addProduct(data));
+      if (id) {
+        await dispatch(updateProduct(id, formData));
+      } else {
+        await dispatch(addProduct(formData));
+      }
       navigate('/products');
     } catch (error) {
-      console.error('Error adding product:', error);
+      console.error('Error saving product:', error);
     }
   };
 
   return (
-    <div className="add-product-container">
-      <div className="add-product-form">
-        <h1>{id ? 'Edit Product' : 'Add Product'}</h1>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={data.title || ''}
-            name="title"
-            onChange={handleChange}
-            placeholder="Enter Product Title"
-            required
-          />
-          <textarea
-            value={data.description || ''}
-            name="description"
-            onChange={handleChange}
-            placeholder="Enter Product Description"
-            required
-          />
-          <input
-            type="number"
-            name="price"
-            value={data.price || ''}
-            onChange={handleChange}
-            placeholder="Enter Product Price"
-            required
-          />
-          <input
-            type="text"
-            name="image"
-            value={data.image || ''}
-            onChange={handleChange}
-            placeholder="Enter Product Image URL"
-            required
-          />
-          <select
-            value={data.category || ''}
-            name="category"
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Category</option>
-            <option value="EYEGLASSES">EYEGLASSES</option>
-            <option value="SUNGLASSES">SUNGLASSES</option>
-            <option value="LENSES">LENSES</option>
-            <option value="COLLECTION">COLLECTION</option>
-            <option value="CONTACTS">CONTACTS</option>
-          </select>
-          <select
-            name="subcategory"
-            value={data.subcategory || ''}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Subcategory</option>
-            <option value="MEN">MEN</option>
-            <option value="WOMEN">WOMEN</option>
-            <option value="KIDS">KIDS</option>
-          </select>
-          <input 
-            type="number"
-            name="stock"
-            value={data.stock || ''}
-            onChange={handleChange}
-            placeholder="Enter Stock Quantity"
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : id ? 'Update Product' : 'Add Product'}
-          </button>
-        </form>
+    <div className="container-fluid position-relative d-flex p-0">
+      <Sidebar />
+      <div className="content">
+        <div className="container-fluid pt-4 px-4">
+          <div className="bg-secondary rounded p-4">
+            <h2 className="mb-4">{id ? 'Edit Product' : 'Add New Product'}</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Description</label>
+                <textarea
+                  className="form-control"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Price</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Category</label>
+                <select
+                  className="form-control"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {cat?.map(category => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Subcategory</label>
+                <select
+                  className="form-control"
+                  name="subCategory"
+                  value={formData.subCategory}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Subcategory</option>
+                  {subcat?.map(subcategory => (
+                    <option key={subcategory._id} value={subcategory._id}>
+                      {subcategory.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Stock</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={loading}
+              >
+                {loading ? 'Saving...' : id ? 'Update Product' : 'Add Product'}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

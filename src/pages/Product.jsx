@@ -47,7 +47,7 @@ function Product() {
                   </span>
                 </p>
                 <div className="editbtn">
-                  <Link to={`/edit/${product._id}`}>Edit</Link>
+                  <Link to={`/add-product/${product._id}`}>Edit</Link>
                   <button onClick={() => handleDelete(product._id)}>Delete</button>
                 </div>
               </div>
